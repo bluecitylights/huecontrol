@@ -1,0 +1,27 @@
+{
+    "authenticate": {
+        "host": "mybridgeipaddress",
+        "port": 80,
+        "username": "myhuebridkeyhere",
+        "timeout": 15000
+    },
+    
+    "users": [
+        {
+            "name": "user1"
+
+        },
+        {
+            "name": "user2"
+
+        },
+        {
+            "name": "user3"
+
+        },
+        {
+            "name": "user4"
+
+        }
+    ]
+}
