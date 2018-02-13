@@ -1,26 +1,26 @@
 {
     "authenticate": {
-        "host": "mybridgeipaddress",
+        "host": "192.168.1.3",
         "port": 80,
-        "username": "myhuebridkeyhere",
+        "username": "N16ycSOEeSdkVXe3dAU6KoL8hcvEeif0vYQYKVyp",
         "timeout": 15000
     },
     
     "users": [
         {
-            "name": "user1"
+            "name": "Richard"
 
         },
         {
-            "name": "user2"
+            "name": "Karlin"
 
         },
         {
-            "name": "user3"
+            "name": "Thomas"
 
         },
         {
-            "name": "user4"
+            "name": "Eva"
 
         }
     ]

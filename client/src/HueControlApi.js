@@ -8,14 +8,14 @@ const HueControlApi = {
     return this.users
   },
   getUser: function(id) {
-    const isUser = p => p.id == id
+    const isUser = p => p.id === id
     return this.users.find(isUser)
   },
   getUserLights: function(userId) {
     return [{id: 1, name: 'lamp1'}, {id: 2, name: 'lamp2'}]
   },
   getLight: function(id) {
-    const isLight = p => p.id == id
+    const isLight = p => p.id === id
     return this.lights.find(isLight)
   }
 }

@@ -22,7 +22,8 @@ const Light = (props) => {
   }
   return (
     <div>
-      <h1>lamp</h1>
+      <LightHeader />
+      <LightMain />
     </div>
   );
 }
@@ -34,31 +35,31 @@ const LightLink = ({light}) => (
 )
 
 const AllLights = (props) => (
-    <div>
-        <h1>alllights</h1>
-
-        
-
-        <h1>{JSON.stringify(props)}</h1>
-
-        <ul>
-          {
-            props.getLights().map((item, index) => (
+  <div>
+    <h1>alllights</h1>
+      <h1>{JSON.stringify(props)}</h1>
+      <ul>
+      {
+        props.getLights().map((item, index) => (
               <LightLink light={item} />
-          ))
-        }
-        </ul>
-
+        ))
+      }
+       </ul>
     </div>
 )
 
 const Lights = (props) => (
-  <AllLights {...props} />
+  <div>
+    <h1>complights</h1>
+    <h1>{JSON.stringify(props.getLights())}</h1>
+
+    <Switch>
+      <Route exact path="/" render={(props) => <h1>render</h1> } />
+      <Route exact path="/lights/" render={(props) => <AllLights {...props} /> } />
+      <Route exact path="/lights/:id" render={(props) => <Light getLight={(id) => HueControlApi.getLight(id)} {...props} /> } />
+  </Switch>
+  </div>
   
-  // <Switch>
-  //   <Route exact path="/lights" render={(props) => <AllLights {...props} /> } />
-  //   <Route path="/lights/:id" render={(props) => <Lights getLight={(id) => HueControlApi.getLight(id)} {...props} /> } />
-  // </Switch>
 )
 
 export default Lights;
