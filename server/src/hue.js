@@ -1,4 +1,4 @@
- const data = require('../data/data.json');
+ const data = require('../../data/data.json');
 
  const huejay = require('huejay');
  const client = new huejay.Client(data.authenticate);

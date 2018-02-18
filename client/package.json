@@ -10,9 +10,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && npm run move-build-to-server",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "move-build-to-server": "mv build _build && mv _build ../server && cd ../server && rm -rf public && mv _build public"
   },
-  "proxy": "http://localhost:5000/"
+  "proxy": "http://localhost:3001/"
 }
