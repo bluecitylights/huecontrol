@@ -27,3 +27,4 @@ npm run build
 npm prune --production 
 npm start
 
+https://medium.com/netbeast/devops-workflow-node-js-docker-ec33a5133311
