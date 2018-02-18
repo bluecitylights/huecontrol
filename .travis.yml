@@ -2,15 +2,15 @@ language: node_js
 
 sudo: required
 
-before_install:
-  cd server
-
-install:
-  npm install
-  npm run build
-  npm prune prune --production
 services:
   - docker
 
 before install:
   - docker build -t bluecitylights\hueControl .
+
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "seperate-server-folder" ]; then
+    docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
+    docker push USER/REPO;
+    fi
