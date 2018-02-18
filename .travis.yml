@@ -4,8 +4,12 @@ node_js:
 
 sudo: required
 
-script:
+before_script:
+  cd server
 
+script:
+  npm test
+  
 services:
   - docker
 
