@@ -9,12 +9,11 @@ before_script:
 
 script:
   npm test
-  
+
 services:
   - docker
 
-before install:
-  - docker build -t bluecitylights\hueControl .
+before install:  travis_wait 30 docker build -t bluecitylights\hueControl .
 
 
 after_success:
