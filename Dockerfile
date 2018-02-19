@@ -6,12 +6,7 @@ WORKDIR /usr/src/app
 ADD ./client ./client
 ADD ./server ./server
 
-RUN cd client && \
-    npm install && \
-    npm run build && \
-    cd .. &&\
-    \
-    cd server && \
+RUN cd server && \
     npm install && \
     npm run build && \
     npm prune --production && \
