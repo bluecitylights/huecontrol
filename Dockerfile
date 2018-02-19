@@ -5,7 +5,7 @@ RUN mkdir -p /usr/src/app/server
 WORKDIR /usr/src/app
 ADD ./client ./client
 ADD ./server ./server
-ADD .data ./data
+ADD ./data ./data
 
 RUN cd client && \
     npm install && \
