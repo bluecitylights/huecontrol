@@ -2,7 +2,7 @@ const express = require('express');
 const hueControl = require('./hue.js');
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3000;
 
 app.get('/api/hello', (req, res) => {
   console.log('hello called')
