@@ -1,0 +1,26 @@
+{
+  "name": "hueControl",
+  "version": "1.0.0",
+  "scripts": {
+    "client": "cd client && yarn start",
+    "server": "nodemon server.js",
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
+    "build": "NODE_ENV=production webpack",
+    "start": "NODE_ENV=production node build/index",
+    "watch": "NODE_ENV=development PORT=3001 concurrently \"webpack --watch\" \"nodemon --watch build/index.js build/index.js\"",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "dependencies": {
+    "express": "^4.16.2",
+    "huejay": "^1.8.0",
+    "finalhandler": "^1.1.0",
+    "serve-static": "^1.13.1"
+  },
+  "devDependencies": {
+    "concurrently": "^3.5.0",
+    "json-loader": "^0.5.7",
+    "nodemon": "^1.14.0",
+    "webpack": "^3.10.0",
+    "webpack-node-externals": "^1.6.0"
+  }
+}
