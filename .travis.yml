@@ -7,6 +7,9 @@ sudo: false
 before_script:
   cd server
 
+install:
+  npm install --save-dev webpack
+
 script:
   npm test
 
