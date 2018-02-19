@@ -5,8 +5,14 @@ RUN mkdir -p /usr/src/app/server
 WORKDIR /usr/src/app
 ADD ./client ./client
 ADD ./server ./server
+ADD .data ./data
 
-RUN cd server && \
+RUN cd client && \
+    npm install && \
+    npm run build && \
+    cd .. &&\
+    \ 
+    cd server && \
     npm install && \
     npm run build && \
     npm prune --production && \
