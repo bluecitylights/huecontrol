@@ -4,6 +4,9 @@ const hueControl = require('./hue.js');
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(express.static('public'));
+app.use('/static', express.static('public/static'));
+
 app.get('/api/hello', (req, res) => {
   console.log('hello called')
   res.send({ express: 'Welcome to HUE Control' });
