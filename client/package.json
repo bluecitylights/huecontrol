@@ -15,5 +15,8 @@
     "eject": "react-scripts eject",
     "move-build-to-server": "mv build _build && mv _build ../server && cd ../server && rm -rf public && mv _build public"
   },
-  "proxy": "http://localhost:3001/"
+  "proxy": "http://localhost:3001/",
+  "devDependencies": {
+    "react-promise": "^2.0.1"
+  }
 }
