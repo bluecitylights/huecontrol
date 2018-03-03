@@ -1,10 +1,12 @@
 const data = require('../../data/data.json');
 const low = require('lowdb');
+const lodashId = require('lodash-id');
 const FileSync = require('lowdb/adapters/FileSync');
 
 
 const adapter = new FileSync('../data/db.json');
 const db = low(adapter);
+db._.mixin(lodashId);
 
 db.defaults({users: [], authenticate: {} }).write();
 
@@ -51,8 +53,21 @@ exports.setBridge = ipAddress => {
     });
 }
 
-exports.users = function() {
-    return data.users;
+exports.getUsers = function() {
+    return db.get('users').value();
+}
+
+exports.getUser = (id) => {
+    const users = db.get('users');
+    return users.getById(id).value();
+}
+
+exports.addUser = (user) => {
+    console.log('adding user %s', user);
+    const users = db.get('users');
+    const newUser = users.insert(user).write();
+    console.log('new user %s', newUser);
+    return users.getById(newUser.id).value();
 }
 
 // function sensors(user) {

@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const hueControl = require('./hue.js');
 const morgan = require('morgan');
 
 const app = express();
@@ -11,22 +10,6 @@ app.use('/static', express.static('public/static'));
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-
-app.get('/api/hello', (req, res) => {
-  res.send({ express: 'Welcome to HUE Control' });
-});
-
-app.get('/api/bridge', (req, res) => {
-  res.send(hueControl.getBridge());
-})
-app.post('/api/bridge', (req, res) => {
-  const ip = req.body.ipAddress;
-  hueControl.setBridge(ip);
-  res.end();
-});
-
-app.get('/api/users', (req, res) => {
-  res.send({users: hueControl.users()});
-})
+app.use('/api', require('./routes').router);
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
