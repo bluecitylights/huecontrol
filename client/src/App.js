@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import { Switch, Route, Link } from 'react-router-dom'
 import Users from './Users';
+import Bridge from './Bridge.js';
 
 const Home = () => (
   <div>
@@ -17,6 +18,7 @@ const Main = () => (
     <Switch>
       <Route exact path='/' component={Home} />
       <Route path='/users' component={Users} />
+      <Route path='/bridge' component={Bridge} />
     </Switch>
   </main>
 )
@@ -27,6 +29,7 @@ const Header = () => (
       <ul>
         <li><Link to='/'>Home</Link></li>
         <li><Link to='/users'>Users</Link></li>
+        <li><Link to='/bridge'>Bridge</Link></li>
       </ul>
     </nav>
   </header>
