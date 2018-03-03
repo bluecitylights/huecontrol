@@ -17,10 +17,11 @@ app.get('/api/hello', (req, res) => {
 });
 
 app.get('/api/bridge', (req, res) => {
-  res.send(hueControl.bridge());
+  res.send(hueControl.getBridge());
 })
 app.post('/api/bridge', (req, res) => {
   const ip = req.body.ipAddress;
+  hueControl.setBridge(ip);
   res.end();
 });
 
