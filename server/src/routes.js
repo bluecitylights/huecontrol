@@ -5,6 +5,11 @@ const hueControl = require('./hue.js');
 router.get('/hello', (req, res) => {
   res.send({ express: 'Welcome to HUE Control' });
   });
+
+router.post('/authenticate', (req, res) => {
+    const authResult = hueControl.authenticate(req.body);
+    res.send(authResult);
+});
   
 router.route('/bridge')
     .get((req, res) => {

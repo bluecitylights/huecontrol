@@ -2,7 +2,7 @@ const data = require('../../data/data.json');
 const low = require('lowdb');
 const lodashId = require('lodash-id');
 const FileSync = require('lowdb/adapters/FileSync');
-
+const jwt = require('jsonwebtoken');
 
 const bcrypt = require('bcrypt');
 
@@ -14,6 +14,12 @@ const generateHash = (password) => {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 }
 
+const validatePassword = (plainText, hash) => {
+    console.log('plain %s', plainText);
+    console.log('hash %s', hash);
+    return bcrypt.compareSync(plainText, hash);
+}
+
 db.defaults({users: [{name: 'admin', password:generateHash('admin')}], hueClientConfig: {host: '192.168.1.3'} }).write();
 const dbGetUsers = () => {
     return db.get('users');
@@ -21,8 +27,15 @@ const dbGetUsers = () => {
 
 const dbGetUser = id => {
     const users = dbGetUsers();
-    return users.getById(id).value();
+    return users.getById(id);
 }
+
+const dbGetUserByName = username => {
+    const users = dbGetUsers();
+    console.log('finding user by name %s', username);
+    return users.find({username: username});
+}
+
 const dbGetHueClientConfig = () => {
     return db.get('hueClientConfig');
 }
@@ -78,7 +91,7 @@ exports.getUsers = function() {
 }
 
 exports.getUser = (id) => {
-    const user = dbGetUser(id);
+    const user = dbGetUser(id).value();
     delete user['password'];
     return user;
 }
@@ -90,6 +103,34 @@ exports.addUser = (user) => {
     const newUser = users.insert(user).write();
     delete newUser['password'];
     return newUser;
+}
+
+exports.authenticate = userToAuthenticate =>  {
+    console.log('authnticating %s', userToAuthenticate.username);
+    const user = dbGetUserByName(userToAuthenticate.username).value();
+    if (!user) {
+        console.log('didnt find user');
+        return {success: false, message: 'Authntication failed. Unknon user' + userToAuthenticate.username};
+    }
+    if (!validatePassword(userToAuthenticate.password, user.password))  {
+        console.log('found user, wrong password');
+        return {success: false, message: 'Authntication failed. Wrong password'};
+    }
+    // if user is found and password is right
+    // create a token with only our given payload
+    // we don't want to pass in the entire user since that has the password
+    const payload = {
+        admin: user.admin 
+    };
+    var token = jwt.sign(payload, '12345', {
+        expiresIn: 60*60*24
+    });
+
+    return {
+        success: true,
+        message: 'Enjoy your token!',
+        token: token
+    };
 }
 
 // function sensors(user) {
