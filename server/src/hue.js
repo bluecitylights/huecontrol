@@ -4,22 +4,41 @@ const lodashId = require('lodash-id');
 const FileSync = require('lowdb/adapters/FileSync');
 
 
+const bcrypt = require('bcrypt');
+
 const adapter = new FileSync('../data/db.json');
 const db = low(adapter);
 db._.mixin(lodashId);
 
-db.defaults({users: [], authenticate: {} }).write();
+const generateHash = (password) => {
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+}
+
+db.defaults({users: [{name: 'admin', password:generateHash('admin')}], hueClientConfig: {host: '192.168.1.3'} }).write();
+const dbGetUsers = () => {
+    return db.get('users');
+}
+
+const dbGetUser = id => {
+    const users = dbGetUsers();
+    return users.getById(id).value();
+}
+const dbGetHueClientConfig = () => {
+    return db.get('hueClientConfig');
+}
 
 const huejay = require('huejay');
 getClient = () => {
-    return new huejay.Client(db.get('authenticate').value());
+    const config = db.get('hueClientConfig').value();
+    console.log('get clinet %s', config);
+    return new huejay.Client(config);
 }
 
 console.log(getClient());
 
 exports.getBridge = () => {
-    const client = getClient();
     console.log('hallo bridge');
+    const client = getClient();
     console.log(client);
     let response = { ipAddress : client.config.host, authenticated: false};
     client.users.get().then(user => {
@@ -30,13 +49,14 @@ exports.getBridge = () => {
 
 exports.setBridge = ipAddress => {
     console.log('set bridge');
-    db.set('authenticate.host', ipAddress).write();
+    db.set('hueClientConfig.host', ipAddress).write();
     let client = getClient();
     let user = new client.users.User;
     user.deviceType = 'HueControl';
     client.users.create(user).then(user => {
-        db.set('authenticate.username', user.username).write();
-        console.log(db.get('authenticate').value());
+        console.log('username %s',user.username);
+        db.set('hueClientConfig.username', user.username).write();
+        console.log(db.get('hueClientConfig').value());
         const currentUser = client.config.username;
         client.users.get().then(user => {
             client.users.delete(currentUser).then(() => {
@@ -58,16 +78,18 @@ exports.getUsers = function() {
 }
 
 exports.getUser = (id) => {
-    const users = db.get('users');
-    return users.getById(id).value();
+    const user = dbGetUser(id);
+    delete user['password'];
+    return user;
 }
 
 exports.addUser = (user) => {
     console.log('adding user %s', user);
     const users = db.get('users');
+    user.password = generateHash(user.password);
     const newUser = users.insert(user).write();
-    console.log('new user %s', newUser);
-    return users.getById(newUser.id).value();
+    delete newUser['password'];
+    return newUser;
 }
 
 // function sensors(user) {

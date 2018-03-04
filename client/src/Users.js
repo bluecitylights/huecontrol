@@ -62,7 +62,7 @@ import Async from 'react-promise'
 // }
 
 const UserLink = (props) => (
-  <div><Link to={`${props.match.url}/${props.user.id}`}>{props.user.id}-{props.user.name}</Link></div>
+  <div><Link to={`${props.match.url}/${props.user.id}`}>{props.user.id}-{props.user.username}</Link></div>
 )
 
 const AllUsers = (props) => (

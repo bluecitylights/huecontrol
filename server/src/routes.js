@@ -8,7 +8,9 @@ router.get('/hello', (req, res) => {
   
 router.route('/bridge')
     .get((req, res) => {
-        res.send(hueControl.getBridge());
+        const bridge = hueControl.getBridge();
+        console.log('route bridge %s', bridge);
+        res.send(bridge);
     })
     .post((req, res) => {
         const ip = req.body.ipAddress;
@@ -35,7 +37,7 @@ router.route('/users/:id')
         next();
       })
       .get((req, res) => {
-        console.log('getting');
+        console.log('getting %s', req.user);
         res.send(req.user);
       });
 
