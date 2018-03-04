@@ -1,4 +1,5 @@
 const express = require('express');
+const routes = require('./routes');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
@@ -10,6 +11,6 @@ app.use('/static', express.static('public/static'));
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-app.use('/api', require('./routes').router);
+app.use('/', routes);
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

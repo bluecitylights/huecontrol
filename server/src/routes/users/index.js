@@ -1,29 +1,14 @@
-const express = require('express');
-const router = express.Router();
-const hueControl = require('./hue.js');
+const hueControl = require('../../hue');
+console.log('routes/users/index');
+const routes = require('express').Router();
 
-router.get('/hello', (req, res) => {
-  res.send({ express: 'Welcome to HUE Control' });
-  });
-
-router.post('/authenticate', (req, res) => {
+routes.post('/authenticate', (req, res) => {
+    //console.log('authenticating %s', req.body.username);
     const authResult = hueControl.authenticate(req.body);
     res.send(authResult);
 });
-  
-router.route('/bridge')
-    .get((req, res) => {
-        const bridge = hueControl.getBridge();
-        console.log('route bridge %s', bridge);
-        res.send(bridge);
-    })
-    .post((req, res) => {
-        const ip = req.body.ipAddress;
-        hueControl.setBridge(ip);
-        res.end();
-    });
-  
-router.route('/users')
+
+routes.route('/')
     .get((req, res) => {
         res.send({users: hueControl.getUsers()});
     })
@@ -34,7 +19,7 @@ router.route('/users')
         res.send(user);
       });
 
-router.route('/users/:id')
+routes.route('/:id')
       .all((req, res, next) => {
         console.log('looking up');
         console.log(req.params);
@@ -46,6 +31,4 @@ router.route('/users/:id')
         res.send(req.user);
       });
 
-  
-
-module.exports.router = router;
+module.exports = routes;
