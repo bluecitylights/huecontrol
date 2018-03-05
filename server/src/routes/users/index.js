@@ -1,14 +1,17 @@
 const hueControl = require('../../hue');
 console.log('routes/users/index');
 const routes = require('express').Router();
+const auth = require('../authenticate');
 
 routes.post('/authenticate', (req, res) => {
-    //console.log('authenticating %s', req.body.username);
-    const authResult = hueControl.authenticate(req.body);
-    res.send(authResult);
+  //console.log('authenticating %s', req.body.username);
+  const authResult = hueControl.authenticate(req.body);
+  res.send(authResult);
 });
+  
 
 routes.route('/')
+    .all(auth.validate)
     .get((req, res) => {
         res.send({users: hueControl.getUsers()});
     })
