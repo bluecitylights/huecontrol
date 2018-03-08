@@ -2,48 +2,66 @@ const hueControl = require('../hue');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const secret = '12345';
 
 exports.generateHash = (password) => {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+    return bcrypt.hash(password, bcrypt.genSaltSync(10));
 }
 
 exports.validatePassword = (plainText, hash) => {
     console.log('plain %s', plainText);
     console.log('hash %s', hash);
-    return bcrypt.compareSync(plainText, hash);
+    return bcrypt.compare(plainText, hash).
+        then(validationResult => {
+            console.log('val %s' + validationResult);
+            if (validationResult) {
+                console.log('auth success');
+                return;
+            }
+            else {
+                console.log('auth error');
+                return Promise.reject(new Error('Authntication failed. Wrong password'));
+            }
+    });
 }
 
-exports.generateToken = () => {
-    return jwt.sign(payload, secret, {
+const secret = '12345';
+
+exports.generateToken = (payload) => {
+    return Promise.resolve(jwt.sign(payload, secret, {
         expiresIn: 60*60*24
-    });
+    }));
+}
+
+const getToken = req => {
+    if (req.body && req.body.token) {
+        return Promise.resolve(req.body.token);
+    }
+
+    if(req.query && req.query.token) {
+        return Promise.resolve(req.query.token);
+    }
+
+    if (req.header('x-access-token')) {
+        return Promise.resolve(req.header('x-access-token'));
+    }
+
+    return Promise.reject(new Error('no token provided'));
 }
 
 exports.validate = (req, res, next) => {
-    const token = req.body.token || req.query.token || req.headers['x-access-token'];
-    // decode token
-    if (token) {
-        // verifies secret and checks exp
-        jwt.verify(token, secret, function(err, decoded) {      
-        if (err) {
-            return res.json({ success: false, message: 'Failed to authenticate token.' });    
-        } else {
-            // if everything is good, save to request for use in other routes
-            req.decoded = decoded;    
-            next();
-        }
+    return new Promise((resolve, reject) => {
+        getToken(req).then(token => {
+            jwt.verify(token, secret, function(err, decoded) {      
+                if (err) {
+                    reject({ success: false, message: 'Failed to authenticate token.' });
+                    return;    
+                } else {
+                    // if everything is good, save to request for use in other routes
+                    req.decoded = decoded;    
+                    next();
+                }
+            })
+        })
+        .catch(err => reject(err))
     });
-
-    } else {
-
-        // if there is no token
-        // return an error
-        return res.status(403).send({ 
-            success: false, 
-            message: 'No token provided.' 
-        });
-
-    }
-    next();
 }

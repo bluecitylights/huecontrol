@@ -1,17 +1,22 @@
 const hueControl = require('../../hue');
-console.log('routes/briddge/index');
 const routes = require('express').Router();
+const auth = require('../authenticate');
 
 routes.route('/')
-  .get((req, res) => {
-      const bridge = hueControl.getBridge();
-      console.log('route bridge %s', bridge);
-      res.send(bridge);
+    .all((req, res, next) => {
+        auth.validate(req, res, next).catch(next)
     })
-    .post((req, res) => {
+    .get((req, res, next) => {
+         hueControl.getBridge()
+            .then(bridge => res.send(bridge))
+            .catch(next);
+        })
+    .post((req, res, next) => {
+        console.log('posting bridge');
         const ip = req.body.ipAddress;
-        hueControl.setBridge(ip);
-        res.end();
-    });
+        hueControl.setBridge(ip)
+            .then(res.end())
+            .catch(next);
+        });
 
 module.exports = routes;

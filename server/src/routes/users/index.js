@@ -3,35 +3,33 @@ console.log('routes/users/index');
 const routes = require('express').Router();
 const auth = require('../authenticate');
 
-routes.post('/authenticate', (req, res) => {
-  //console.log('authenticating %s', req.body.username);
-  const authResult = hueControl.authenticate(req.body);
-  res.send(authResult);
+routes.post('/authenticate', (req, res, next) => {
+  hueControl.authenticate(req.body)
+    .then(x => {
+      console.log('in post');
+      res.send(JSON.stringify(x));
+    })
+    .catch(next);
 });
   
 
 routes.route('/')
-    .all(auth.validate)
-    .get((req, res) => {
-        res.send({users: hueControl.getUsers()});
+    .all((req, res, next) => {
+      auth.validate(req, res, next).catch(next)
     })
-    .post((req, res) => {
-        console.log('we are adding the user');
-        console.log(req.body);
-        const user = hueControl.addUser(req.body);
-        res.send(user);
-      });
+    .get((req, res, next) => {
+      hueControl.getUsers().then(users => res.send(users)).catch(next);
+    })
+    .post((req, res, next) => {
+        hueControl.addUser(req.body).then(user => res.send(user)).catch(next);
+    });
 
 routes.route('/:id')
-      .all((req, res, next) => {
-        console.log('looking up');
-        console.log(req.params);
-        req.user = hueControl.getUser(req.params.id);
-        next();
-      })
-      .get((req, res) => {
-        console.log('getting %s', req.user);
-        res.send(req.user);
-      });
+  .all((req, res, next) => {
+    auth.validate(req, res, next).catch(next)
+  })
+  .get((req, res, next) => {
+    hueControl.getUser(req.params.id).then(user => res.send(user)).catch(next);
+  });
 
 module.exports = routes;

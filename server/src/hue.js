@@ -2,187 +2,194 @@ const auth = require('./routes/authenticate')
 const db = require('./db');
 const huejay = require('huejay');
 
-const dbDefaults = {users: [{name: 'admin', password:auth.generateHash('admin')}], hueClientConfig: {host: '192.168.1.3'} };
+const dbDefaults = {
+    users: [{id: '07341624-3617-4568-b2d4-a271b36004fc', username: 'admin', password:'$2a$10$dxTx69aXqLEADe5ht1HTseE8METJwODvSUK7AamwnubXYYekHDK7.'}], // 'admin'
+    hueClientConfig: {host: '192.168.1.3'} };
+
 db.defaults(dbDefaults).write();
 const dbGetUsers = () => {
-    return db.get('users');
+    const users = db.get('users');
+    return Promise.resolve(users);
 }
 
 const dbGetUser = id => {
-    const users = dbGetUsers();
-    return users.getById(id);
+    return dbGetUsers()
+        .then(users => {
+            const user = users.getById(id);
+            if (user === undefined) {
+                return Promise.reject('Cannot find user' + id);
+            }
+            return user;
+        });
 }
 
 const dbGetUserByName = username => {
-    const users = dbGetUsers();
-    console.log('finding user by name %s', username);
-    return users.find({username: username});
+    return dbGetUsers().then(users => {
+        const user = users.find({username: username}).value();
+        if (!user) {
+            console.log('didnt find user %s '.username);
+            return Promise.reject('Authntication failed. Unknon user' + username);
+        }
+        return user;
+    });
 }
 
 const dbGetHueClientConfig = () => {
-    return db.get('hueClientConfig');
+    return new Promise((resolve, reject) => {
+        const config = db.get('hueClientConfig').value();
+        if (config === undefined) {
+            console.log('cannot find it');
+            reject(Error('Cannot find hueClientConfig in db'));
+        }
+        else {
+            console.log('found it')
+            resolve(config);
+        }
+    });
 }
 
+const dbSetHost = (ipAddress) => {
+    return Promise.resolve(db.set('hueClientConfig.host', ipAddress).write());
+}
+
+const dbSetBridgeUsername = username => {
+    return Promise.resolve(db.set('hueClientConfig.username', username).write());
+}
+
+const dbGetBridgeUser = () => {
+    return Promise.resolve(db.get('hueClientConfig').value());
+}
 
 getClient = () => {
-    const config = db.get('hueClientConfig').value();
-    console.log('get clinet %s', config);
-    return new huejay.Client(config);
+    return dbGetHueClientConfig()
+        .then(config => new huejay.Client(config));
 }
 
-console.log(getClient());
+getClient()
+    .then(client => console.log(client))
+    .catch(error => console.log(error));
 
 exports.getBridge = () => {
-    console.log('hallo bridge');
-    const client = getClient();
-    console.log(client);
-    let response = { ipAddress : client.config.host, authenticated: false};
-    client.users.get().then(user => {
-        response.authenticated = true
-    });
-    return response;
+    return getClient()
+        .then(client => new Promise((resolve, reject) => {
+            client.users.get()
+                .then(user => {resolve({ ipAddress : client.config.host, authenticated: true})}) 
+                .catch(error => {reject({ ipAddress : client.config.host, authenticated: false})})
+        }));
+}
+
+const createUser = client => {
+    console.log('creating user');
+    const user = new client.users.User;
+    user.deviceType = 'HueControl';
+    return client.users.create(user)
+        .then(user => { return dbSetBridgeUsername(user.username) })
+        .then({success: true});
 }
 
 exports.setBridge = ipAddress => {
     console.log('set bridge');
-    db.set('hueClientConfig.host', ipAddress).write();
-    const client = getClient();
-    const user = new client.users.User;
-    user.deviceType = 'HueControl';
-    client.users.create(user).then(user => {
-        console.log('username %s',user.username);
-        db.set('hueClientConfig.username', user.username).write();
-        console.log(db.get('hueClientConfig').value());
-        const currentUser = client.config.username;
-        client.users.get().then(user => {
-            client.users.delete(currentUser).then(() => {
-                console.log('Remove previous user %s', currentUser);
-            }).catch(error => {
-                console.log('Failed to remove user %s. Error: %s', currentUser, error.stack);
-            })
+    return dbSetHost(ipAddress)
+        .then(getClient)
+        .then(createUser)
+        .catch(error => {
+            if (error instanceof huejay.Error && error.type === 101) {
+                console.log(`Link button not pressed. Try again...`);
+                return {success: false, message: `Link button not pressed. Try again...`};
+            }
+            return {success: false, message: `error`};
         })
-    }).catch(error => {
-        if (error instanceof huejay.Error && error.type === 101) {
-          return console.log(`Link button not pressed. Try again...`);
-        }
-        console.log(error.stack);
-    });
 }
 
 exports.getUsers = function() {
-    return db.get('users').value();
+    console.log('getusers');
+    return dbGetUsers();
 }
 
 exports.getUser = (id) => {
-    const user = dbGetUser(id).value();
-    delete user['password'];
-    return user;
+    return dbGetUser(id);
 }
 
 exports.addUser = (user) => {
     console.log('adding user %s', user);
-    const users = db.get('users');
-    user.password = auth.generateHash(user.password);
-    const newUser = users.insert(user).write();
-    delete newUser['password'];
-    return newUser;
+    return Promise.all([dbGetUsers(), auth.generateHash(user.password)])
+        .then(result => {
+            const users = result[0];
+            const hash = result[1];
+            user.password = hash;
+            return users.insert(user).write();
+        })
 }
 
 exports.authenticate = userToAuthenticate =>  {
     console.log('authnticating %s', userToAuthenticate.username);
-    const user = dbGetUserByName(userToAuthenticate.username).value();
-    if (!user) {
-        console.log('didnt find user');
-        return {success: false, message: 'Authntication failed. Unknon user' + userToAuthenticate.username};
-    }
-    if (!auth.validatePassword(userToAuthenticate.password, user.password))  {
-        console.log('found user, wrong password');
-        return {success: false, message: 'Authntication failed. Wrong password'};
-    }
-    // if user is found and password is right
-    // create a token with only our given payload
-    // we don't want to pass in the entire user since that has the password
-    const payload = {
-        username: user.username 
-    };
-    var token = auth.generaToken(payload, secret);
+    return dbGetUserByName(userToAuthenticate.username)
+        .then(user => {
+            return new Promise((resolve, reject) => {
+                auth.validatePassword(userToAuthenticate.password, user.password)
+                    .then(() => {
+                        
+                        // if user is found and password is right
+                        // create a token with only our given payload
+                        // we don't want to pass in the entire user since that has the password
+                        const payload = {
+                            username: user.id
+                        };
+                        return auth.generateToken(payload);
+                    })
+                    .then(token => {
+                        resolve({
+                            success: true,
+                            message: 'Enjoy your token!',
+                            token: token
+                        });
+                    })
+                    .catch(err => {
+                        reject(err);
+                    })
+                });
+        })
+        .catch(err => {
+            console.log('auth failed ' + err);
+            return {
+                success : false,
+                message: 'failed to authenticate'
+            }
+        });
+}
 
-    return {
-        success: true,
-        message: 'Enjoy your token!',
-        token: token
-    };
+const getHueControlBridgeUsers = (client) => {
+    return client.users.getAll()
+        .then(users => users.filter(user => user.deviceType === 'HueControl')
+    );
 }
 
 exports.clean = () => {
-    console.log('cleaning ...');
-    const client = getClient();
-    return client.users.get().then(currentUser => {
-        console.log(`currentUser deviceType: ${currentUser.deviceType} - ${currentUser.username}`);
-        // delete users except currentUser
-        client.users.getAll()
-            .then(users => {
+    return getClient().then(client => {
+        Promise.all([getHueControlBridgeUsers(client), dbGetBridgeUser()])
+            .then(result => {
+                const users = result[0];
+                const current = result[1];
                 for (let user of users) {
-                    if (currentUser.username !== user.username && user.deviceType === 'HueControl') {
+                    if (current.username !== user.username) {
                         console.log(`removing: ${user.deviceType} - ${user.username}`);
-                        // client.users.delete(user).then(() => {
-                        //     console.log('Remove previous user %s', user);
-                        // }).catch(error => {
-                        //     console.log('Failed to remove user %s. Error: %s', user, error.stack);
-                        // })
+                        client.users.delete(user)
                     }
                 }
-            });
-        
-        console.log('cleaned');
-        return {
-            'success': true,
-            'message': 'cleaned'
-        };
-    }).catch(err => {
-        console.log('error %s', err.stack);
-        return {
-            'success': false,
-            'message': 'HueControl is not authenticated. Cannot clean;'
-        };
-    })
-    console.log('einde');
-        
-}
-
-exports.init = () => {
-    const cleanResult = clean();
-    if (cleanResult.success) {
-        const client = getClient();
-        client.users.get()
-            .then(currentUser => {
-                console.log(`currentUser deviceType: ${currentUser.deviceType} - ${currentUser.username}`);
-                // delete current user
-                console.log('removing current user');
-                client.users.delete(currentUser).then(() => {
-                    console.log('Remove current user %s', currentUser);
-                }).catch(error => {
-                    console.log('Failed to remove user %s. Error: %s', currentUser, error.stack);
-                })
-
-                console.log('initialzied');
+                return;
+            })
+            .then(() => {
                 return {
                     'success': true,
-                    'message': 'initialized'
-                };
-                
-                
+                    'message': 'cleaned'
+                }
             })
-        .catch(err => {
-            console.log('error %s', err.stack);
-            return {
-                'message': 'HueControl is not authenticated. Cannot initialize;'
-            };
-        })
-    }
+            .catch(err => {
+                console.log('error %s', err.stack);
+                return {
+                    'success': false,
+                    'message': 'Cannot clean ' + err
+                };
+            })
+        });
 }
-
-// function sensors(user) {
-//     return client.sensors.getAll();
-// }
-

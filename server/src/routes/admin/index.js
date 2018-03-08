@@ -1,31 +1,21 @@
 const hueControl = require('../../hue');
-console.log('routes/admin/index');
 const routes = require('express').Router();
+const auth = require('../authenticate');
 
 routes.route('/')
-  .get((req, res) => {
-      console.log('admin called');
-      res.send('admin called');
+    .all((req, res, next) => {
+        auth.validate(req, res, next).catch(next)
+    })
+    .get((req, res, next) => {
+        res.send('admin called');
     });
 
-routes.route('/init')
-    .get((req, res) => {
-        const initResult = hueControl.init();
-        res.send(initResult);
-    });
-
-    routes.route('/clean')
-    .get((req, res) => {
-        console.log('cleaning route');
-        hueControl.clean()
-            .then(cleanResult => {
-            
-                console.log('cleanresult %s', cleanResult);
-                res.send(cleanResult);
-            })
-            .catch(err => {
-                console.log('cleaning failed :(');
-            })
+routes.route('/clean')
+    .all((req, res, next) => {
+        auth.validate(req, res, next).catch(next)
+    })
+    .get((req, res, next) => {
+        return hueControl.clean().then(cleanResult => res.send(cleanResult)).catch(next);
     });
 
 module.exports = routes;

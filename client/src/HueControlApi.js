@@ -9,7 +9,7 @@ const HueControlApi = {
     const body = await response.json();
 
     if (response.status !== 200) throw Error(body.message);
-    return body["users"];
+    return body;
   },
   getUser: function(id) {
     const isUser = p => p.id === id
