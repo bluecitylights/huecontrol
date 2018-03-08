@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Switch, Route, Link } from 'react-router-dom'
+import { Switch, Route, Link } from 'react-router-dom';
 //import Lights from './Lights';
 import HueControlApi from './HueControlApi';
+import Async from 'react-promise'
 
 // const Topics = ({ match }) => (
 //   <div>
@@ -61,7 +62,7 @@ import HueControlApi from './HueControlApi';
 // }
 
 const UserLink = (props) => (
-  <div><Link to={`${props.match.url}/${props.user.id}`}>{props.user.id}-{props.user.name}</Link></div>
+  <div><Link to={`${props.match.url}/${props.user.id}`}>{props.user.id}-{props.user.username}</Link></div>
 )
 
 const AllUsers = (props) => (
@@ -87,12 +88,15 @@ const AllUsers = (props) => (
 // )
 
 const Users = (props) => (
-  <div>
-    <h2>Users</h2>
-    <ul>{HueControlApi.allUsers().map((user, index) => (<UserLink user={user} {...props}/>))}</ul>
-    <Route path={`${props.match.url}/:id`} component={User} />
-    <Route exact path={props.match.url} render={() => <h3>Please select a user.</h3>}/>
-  </div>
+  <Async promise={HueControlApi.allUsers()} then={(users) => (
+    <div>
+      <h2>Users</h2>
+      <ul>{users.map((user, index) => (<UserLink user={user} {...props}/>))}</ul>
+      <Route path={`${props.match.url}/:id`} component={User} />
+      <Route exact path={props.match.url} render={() => <h3>Please select a user.</h3>}/>
+    </div>
+  )}
+  />
 );
 
 const User = (props) => (

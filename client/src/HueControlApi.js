@@ -4,8 +4,12 @@ const HueControlApi = {
     { id: 2, name: "Dave Defender"},
     { id: 3, name: "Sam Sweeper"}
   ],
-  allUsers: function() {
-    return this.users
+  allUsers: async () => {
+    const response = await fetch('/api/users');
+    const body = await response.json();
+
+    if (response.status !== 200) throw Error(body.message);
+    return body;
   },
   getUser: function(id) {
     const isUser = p => p.id === id

@@ -28,3 +28,10 @@ npm prune --production
 npm start
 
 https://medium.com/netbeast/devops-workflow-node-js-docker-ec33a5133311
+
+
+Continuous integration
+https://travis-ci.org/bluecitylights/huecontrol/builds
+
+Dockerhub
+https://hub.docker.com/r/bluecitylights/huecontrol/
