@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { Switch, Route, Link } from 'react-router-dom'
-import Users from './Users';
-import Bridge from './Bridge.js';
+import Users from './components/Users';
+import Bridge from './components/Bridge.js';
 
 const Home = () => (
   <div>

@@ -1,4 +1,7 @@
 {
   "users": [],
-  "authenticate": {}
+  "authenticate": {},
+  "hueClientConfig": {
+    "host": "192.168.1.3"
+  }
 }
