@@ -4,9 +4,12 @@ const huejay = require('huejay');
 
 const dbDefaults = {
     users: [{id: '07341624-3617-4568-b2d4-a271b36004fc', username: 'admin', password:'$2a$10$dxTx69aXqLEADe5ht1HTseE8METJwODvSUK7AamwnubXYYekHDK7.'}], // 'admin'
-    hueClientConfig: {host: '192.168.1.3'} };
+    hueClientConfig: {} 
+};
 
 db.defaults(dbDefaults).write();
+
+
 const dbGetUsers = () => {
     const users = db.get('users');
     return Promise.resolve(users);
@@ -28,7 +31,7 @@ const dbGetUserByName = username => {
         const user = users.find({username: username}).value();
         if (!user) {
             console.log('didnt find user %s '.username);
-            return Promise.reject('Authntication failed. Unknon user' + username);
+            return Promise.reject('Authntication failed. Unknon user ' + username);
         }
         return user;
     });
@@ -60,23 +63,29 @@ const dbGetBridgeUser = () => {
     return Promise.resolve(db.get('hueClientConfig').value());
 }
 
+const findBridge = () => {
+    return huejay.discover().
+        then(bridges => {
+            if (bridges.length > 1) {
+                Promise.reject(Error('only 1 bridge supported'));
+            }
+            return bridges[0]
+        })
+}
+
 getClient = () => {
-    return dbGetHueClientConfig()
-        .then(config => new huejay.Client(config));
+    return Promise.all([findBridge(), dbGetHueClientConfig()])
+        .then(result => {
+            const bridge = result[0];
+            const config = result[1];
+            config.host = bridge.ip;
+            return new huejay.Client(config);
+        });
 }
 
 getClient()
     .then(client => console.log(client))
     .catch(error => console.log(error));
-
-exports.getBridge = () => {
-    return getClient()
-        .then(client => new Promise((resolve, reject) => {
-            client.users.get()
-                .then(user => {resolve({ ipAddress : client.config.host, authenticated: true})}) 
-                .catch(error => {reject({ ipAddress : client.config.host, authenticated: false})})
-        }));
-}
 
 const createUser = client => {
     console.log('creating user');
@@ -85,6 +94,15 @@ const createUser = client => {
     return client.users.create(user)
         .then(user => { return dbSetBridgeUsername(user.username) })
         .then({success: true});
+}
+
+exports.getBridge = () => {
+    return getClient()
+        .then(client => new Promise((resolve, reject) => {
+            client.users.get()
+                .then(user => {resolve({ ipAddress : client.config.host, authenticated: true})}) 
+                .catch(error => {resolve({ ipAddress : client.config.host, authenticated: false})}) // dont reject here, the client app must be able to request authentication
+        }));
 }
 
 exports.setBridge = ipAddress => {

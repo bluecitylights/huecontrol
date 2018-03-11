@@ -4,22 +4,37 @@ class Bridge extends React.Component {
     constructor() {
         super();
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         this.state = {
             bridge: {
                 ip: '',
                 isAuthenticated: false
-            }
+            },
+            isLoading: false
         };
     }
 
-    componentDidMount() {
+    componentWillMount() {
+        this.setState({isLoading: true});
         this.getBridge()
             .then(res => this.setState({bridge: res}))
-            .catch(err => console.log(err));
+            .catch(err => console.log(err))
+            .then(() => this.setState({isLoading: false}));
+    }
+
+    getToken = () => {
+        return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjA3MzQxNjI0LTM2MTctNDU2OC1iMmQ0LWEyNzFiMzYwMDRmYyIsImlhdCI6MTUyMDgwMzcyMywiZXhwIjoxNTIwODkwMTIzfQ.e9BVERT_KsE6JvkBiSdJFPdJcyg9BnkYeCSiwba5k4U";
     }
 
     getBridge = async () => {
-        const response = await fetch('api/bridge');
+        const response = await fetch('api/bridge', {
+            method: 'GET',
+            headers : {
+                'Accept' : 'application/json',
+                'Content-Type': 'application/json',
+                'x-access-token' : this.getToken()
+            }
+        });
         const body = await response.json();
         
         if (response.status !== 200) throw Error(body.message);
@@ -34,7 +49,8 @@ class Bridge extends React.Component {
             method: 'POST',
             headers : {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'x-access-token' : this.getToken()
             },
             body: JSON.stringify(bridge)
         }).catch(err => console.log('error submitting'));
@@ -47,12 +63,15 @@ class Bridge extends React.Component {
     }
 
     handleChange(event) {
-        console.log('change');
-        console.log(event.target.value);
         this.setState({bridge: event.target.value});
     }
 
     render() {
+        if (this.state.isLoading) {
+            return (
+                <h2>Loading .. </h2>
+            );
+        }
         return (
             <form onSubmit={this.handleSubmit}>
                 <label htmlFor='bridgeip'>Bridge IP</label>
