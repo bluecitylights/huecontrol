@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
+import AuthService from './AuthService';
 
 class Bridge extends React.Component {
     constructor() {
         super();
+        this.Auth = new AuthService();
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.state = {
@@ -23,7 +25,7 @@ class Bridge extends React.Component {
     }
 
     getToken = () => {
-        return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjA3MzQxNjI0LTM2MTctNDU2OC1iMmQ0LWEyNzFiMzYwMDRmYyIsImlhdCI6MTUyMDgwMzcyMywiZXhwIjoxNTIwODkwMTIzfQ.e9BVERT_KsE6JvkBiSdJFPdJcyg9BnkYeCSiwba5k4U";
+        return this.Auth.getToken();
     }
 
     getBridge = async () => {

@@ -4,7 +4,7 @@ const huejay = require('huejay');
 
 const dbDefaults = {
     users: [{id: '07341624-3617-4568-b2d4-a271b36004fc', username: 'admin', password:'$2a$10$dxTx69aXqLEADe5ht1HTseE8METJwODvSUK7AamwnubXYYekHDK7.'}], // 'admin'
-    hueClientConfig: {} 
+    hueClientConfig: {host: '', username: ''} 
 };
 
 db.defaults(dbDefaults).write();
