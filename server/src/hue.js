@@ -71,6 +71,10 @@ const findBridge = () => {
             }
             return bridges[0]
         })
+        .catch(err => {
+            console.log(err);
+            return {ip: ''};
+        });
 }
 
 getClient = () => {

@@ -1,24 +1,39 @@
 import React from 'react';
 import './Login.css';
 import AuthService from './AuthService';
-import { withRouter } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
 class Login extends React.Component {
 	constructor(){
-		super();
-		this.handleChange = this.handleChange.bind(this);
+        super();
+        this.handleChange = this.handleChange.bind(this);
 		this.handleFormSubmit = this.handleFormSubmit.bind(this);
 		this.Auth = new AuthService();
 	}
 
 	componentWillMount(){
 		if(this.Auth.loggedIn()) {
-			this.props.history.replace('/');
+            this.props.history.replace('/');
 		}
-	}
+    }
+    
+    handleChange(e){
+        this.setState(
+            {
+                [e.target.name]: e.target.value
+            }
+        );
+    }
+
+    handleFormSubmit(e){
+        e.preventDefault();
+        this.Auth.login(this.state.username,this.state.password)
+            .then(res => {this.props.history.replace('/');})
+            .catch(alert);
+    }
     
 	render() {
-		return (
+        return (
 			<div className="center">
 				<div className="card">
 					<h1>Login</h1>
@@ -47,21 +62,6 @@ class Login extends React.Component {
 			</div>
 		);
 	}
-
-	handleChange(e){
-		this.setState(
-			{
-				[e.target.name]: e.target.value
-			}
-		);
-	}
-
-	handleFormSubmit(e){
-		e.preventDefault();
-		this.Auth.login(this.state.username,this.state.password)
-			.then(res => {this.props.history.replace('/');})
-			.catch(alert);
-	}
 }
 
-export default withRouter(Login);
+export default Login;

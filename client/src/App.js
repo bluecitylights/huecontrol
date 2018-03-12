@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { Switch, Route, Link } from 'react-router-dom'
+import { Switch, Route, Link, Router, withRouter } from 'react-router-dom'
 import Users from './components/Users';
 import Bridge from './components/Bridge';
 import Login from './components/Login';
+import AuthService from './components/AuthService';
+import withAuth from './components/withAuth';
+const Auth = new AuthService();
+
 
 const Home = () => (
   <div>
@@ -38,12 +42,39 @@ const Header = () => (
   </header>
 )
 
-const App = () => (
+class Footer extends React.Component{
+  constructor() {
+    super();
+    this.handleLogout = this.handleLogout.bind(this);
+  }
+
+  handleLogout() {
+    Auth.logout();
+    this.props.history.replace('/login');
+  }
+  
+  render() {
+    if (Auth.loggedIn) {
+      return (<button type="button" className="form-submit" onClick={this.handleLogout}>Logout</button>);
+    }
+    <h2>Please login</h2>
+  }
+  
+}
+
+const FooterWithRouter = withRouter(Footer);
+
+const Layout = () => (
   <div>
     <Header />
-    <hr />
     <Main />
+    <FooterWithRouter />
   </div>
 )
 
-export default App;
+const LayoutWithRouter = withRouter(Layout);
+
+const App = () => (
+  <LayoutWithRouter/>
+)
+export default withAuth(App);
