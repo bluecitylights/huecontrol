@@ -33,6 +33,8 @@ exports.generateToken = (payload) => {
 }
 
 const getToken = req => {
+    console.log('req ' + JSON.stringify(req.body));
+    
     if (req.body && req.body.token) {
         return Promise.resolve(req.body.token);
     }

@@ -1,4 +1,13 @@
 {
-  "users": [],
-  "authenticate": {}
+  "users": [
+    {
+      "id": "07341624-3617-4568-b2d4-a271b36004fc",
+      "username": "admin",
+      "password": "$2a$10$dxTx69aXqLEADe5ht1HTseE8METJwODvSUK7AamwnubXYYekHDK7."
+    }
+  ],
+  "hueClientConfig": {
+    "host": "192.168.1.3",
+    "username": "hZn01OTCQ8YRbP9gK11rUvethIt8Bfn7rbbeLtb-"
+  }
 }
