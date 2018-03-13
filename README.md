@@ -5,8 +5,7 @@ NodeJS server using HUEJay library with React client to restrict acccess to Phil
 # Build application
 install nodejs
 npm install -g nodemon
-npm install -g yarn
-
+Note thst the scrips in package.json are working in linux only. for windows they have to be adjusted. Running Ubuntu forom the Microsfot store is fine too.
 
 
 ## build development
