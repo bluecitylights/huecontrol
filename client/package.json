@@ -17,6 +17,8 @@
   },
   "proxy": "http://localhost:3001/",
   "devDependencies": {
+    "immutability-helper": "^2.6.6",
+    "jwt-decode": "^2.2.0",
     "react-promise": "^2.0.1"
   }
 }

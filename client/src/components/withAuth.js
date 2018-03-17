@@ -34,9 +34,7 @@ export default function withAuth(AuthComponent) {
 
         render() {
             console.log('withauth loc ' + JSON.stringify(this.props.location));
-            console.log('user ' + this.state.user);
             if (this.state.user) {
-                console.log('hist ' + JSON.stringify(this.props.history));
                 return (
                     <AuthComponent location={this.props.location} user={this.state.user} />
                 )

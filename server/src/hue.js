@@ -1,6 +1,7 @@
 const auth = require('./routes/authenticate')
 const db = require('./db');
 const huejay = require('huejay');
+const dummy = require('../../data/data.json');
 
 const dbDefaults = {
     users: [{id: '07341624-3617-4568-b2d4-a271b36004fc', username: 'admin', password:'$2a$10$dxTx69aXqLEADe5ht1HTseE8METJwODvSUK7AamwnubXYYekHDK7.'}], // 'admin'
@@ -121,6 +122,38 @@ exports.setBridge = ipAddress => {
             }
             return {success: false, message: `error`};
         })
+}
+
+exports.getLights = () => {
+    // const lights = JSON.stringify(dummy["lights"]);
+    // console.log(lights);
+    // return Promise.resolve(lights);
+    
+    
+    return getClient()
+        .then(client => client.lights.getAll())
+}
+
+exports.setLight = (light) => {
+    console.log('update light %s %s', JSON.stringify(light), light.state.attributes.on);
+    on = light.state.attributes.on;
+    const id = light.attributes.attributes.id
+    return getClient()
+        .then(client => {
+            return client.lights.getById(id)
+                .then(l => {
+                    l.on = on;
+                    console.log('changed', JSON.stringify(l));
+                    return client.lights.save(l)
+                })
+                .then(l => console.log('updated', l.state.attributes.on))
+                .catch(error => console.log('error', error))
+            })
+        
+        
+        // .then(client => client.lights.save(light))
+        // .then(l => console.log(`Updated light [${l.id}]`))
+        .catch('failed to update light')
 }
 
 exports.getUsers = function() {

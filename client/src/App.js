@@ -5,6 +5,7 @@ import { Switch, Route, Link, Router, withRouter } from 'react-router-dom'
 import Users from './components/Users';
 import Bridge from './components/Bridge';
 import Login from './components/Login';
+import Lights from './components/Lights';
 import AuthService from './components/AuthService';
 import withAuth from './components/withAuth';
 const Auth = new AuthService();
@@ -24,7 +25,7 @@ const Main = () => (
       <Route exact path='/' component={Home} />
       <Route path='/users' component={Users} />
       <Route path='/bridge' component={Bridge} />
-      <Route path='/login' component={Login} />
+      <Route path='/lights' component={Lights} />
     </Switch>
   </main>
 )
@@ -36,7 +37,7 @@ const Header = () => (
         <li><Link to='/'>Home</Link></li>
         <li><Link to='/users'>Users</Link></li>
         <li><Link to='/bridge'>Bridge</Link></li>
-        <li><Link to='/login'>Login</Link></li>
+        <li><Link to='/lights'>Lights</Link></li>
       </ul>
     </nav>
   </header>

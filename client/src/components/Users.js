@@ -3,6 +3,7 @@ import { Route } from 'react-router';
 import {Link} from 'react-router-dom';
 import AuthService from './AuthService';
 import HueControlApi from '../HueControlApi';
+import Lights from './Lights';
 
 
 const UserLink = (props) => (
@@ -10,27 +11,6 @@ const UserLink = (props) => (
     <Link to={`${props.match.url}/${props.user.id}`}>{props.user.id}-{props.user.username}
     </Link>
     </div>
-)
-
-const Lights = (props) => (
-  <div>
-    <h2>Lights</h2>
-    <ul>{props.getUserLights().map((light, index) => (<LightLink light={light} {...props}/>))}</ul>
-    <Route path={`${props.match.url}/:id`} component={Light} />
-    <Route exact path={props.match.url} render={() => <h3>Please select a light.</h3>}/>
-  </div>
-);
-
-const Light = (props) => (
-  <div>
-    <h1>light {props.match.params.id}</h1>
-  </div>
-)
-
-const LightLink = (props) => (
-  <div>
-    <div><Link to={`${props.match.url}/${props.light.id}`}>{props.light.id}-{props.light.name}</Link></div>
-  </div>
 )
 
 const User = (props) => (
@@ -104,7 +84,7 @@ class Users extends React.Component {
         return (
           <div>
             <h2>Users</h2>
-              <ul>{this.state.users.map((user, index) => (<UserLink user={user} {...this.props}/>))}</ul>
+              <ul>{this.state.users.map((user, index) => (<UserLink key={user.id} user={user} {...this.props}/>))}</ul>
                 <Route path={`${this.props.match.url}/:id`} component={User} />  
                 <Route exact path={this.props.match.url} render={() => <h3>Please select a user.</h3>}/>
           </div>
