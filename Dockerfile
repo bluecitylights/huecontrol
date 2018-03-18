@@ -15,7 +15,7 @@ RUN cd client && \
     cd server && \
     npm install && \
     npm run build && \
-    # npm prune --production && \
+    npm prune --production && \
     \
     rm -rf ../client
 

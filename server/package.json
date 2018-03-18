@@ -14,9 +14,7 @@
     "express": "^4.16.2",
     "huejay": "^1.8.0",
     "finalhandler": "^1.1.0",
-    "serve-static": "^1.13.1"
-  },
-  "devDependencies": {
+    "serve-static": "^1.13.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
     "concurrently": "^3.5.1",
@@ -24,8 +22,9 @@
     "jsonwebtoken": "^8.2.0",
     "lodash-id": "^0.14.0",
     "lowdb": "^1.0.0",
-    "morgan": "^1.9.0",
-    "node-gyp": "^3.6.2",
+    "morgan": "^1.9.0"
+  },
+  "devDependencies": {
     "nodemon": "^1.14.0",
     "webpack": "^3.10.0",
     "webpack-node-externals": "^1.6.0"
