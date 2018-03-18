@@ -7,7 +7,7 @@
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
     "build": "NODE_ENV=production webpack",
     "start": "NODE_ENV=production node build/index",
-    "watch": "NODE_ENV=development PORT=3001 concurrently \"webpack --watch\" \"nodemon --watch build/index.js build/index.js\"",
+    "watch": "NODE_ENV=development PORT=3002 concurrently \"webpack --watch\" \"nodemon --watch build/index.js build/index.js\"",
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
@@ -17,7 +17,7 @@
     "serve-static": "^1.13.1"
   },
   "devDependencies": {
-    "bcryptjs": "^2.4.3",
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.2",
     "concurrently": "^3.5.1",
     "json-loader": "^0.5.7",

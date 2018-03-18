@@ -1,5 +1,5 @@
 const hueControl = require('../hue');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt-nodejs');
 const jwt = require('jsonwebtoken');
 
 
