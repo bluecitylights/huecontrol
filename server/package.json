@@ -27,6 +27,6 @@
     "morgan": "1.9.1",
     "nodemon": "1.15.0",
     "webpack": "3.11.0",
-    "webpack-node-externals": "1.6.0"
+    "webpack-node-externals": "1.7.2"
   }
 }
