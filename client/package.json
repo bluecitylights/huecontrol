@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "react": "^16.2.0",
-    "react-dom": "^16.2.1",
-    "react-router-dom": "^4.2.2",
+    "react": "16.2.0",
+    "react-dom": "16.2.1",
+    "react-router-dom": "4.2.2",
     "react-scripts": "3.0.1"
   },
   "scripts": {
@@ -17,6 +17,6 @@
   },
   "proxy": "http://localhost:3001/",
   "devDependencies": {
-    "react-promise": "^2.0.1"
+    "react-promise": "2.0.1"
   }
 }

@@ -11,22 +11,22 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "express": "^4.16.2",
-    "huejay": "^1.8.0",
-    "finalhandler": "^1.1.0",
-    "serve-static": "^1.13.1"
+    "express": "4.16.2",
+    "huejay": "1.8.0",
+    "finalhandler": "1.1.0",
+    "serve-static": "1.13.1"
   },
   "devDependencies": {
-    "bcrypt": "^1.0.3",
-    "body-parser": "^1.18.2",
-    "concurrently": "^3.5.0",
-    "json-loader": "^0.5.7",
-    "jsonwebtoken": "^8.2.0",
-    "lodash-id": "^0.14.0",
-    "lowdb": "^1.0.0",
-    "morgan": "^1.9.1",
-    "nodemon": "^1.14.0",
-    "webpack": "^3.10.0",
-    "webpack-node-externals": "^1.6.0"
+    "bcrypt": "1.0.3",
+    "body-parser": "1.18.2",
+    "concurrently": "3.5.1",
+    "json-loader": "0.5.7",
+    "jsonwebtoken": "8.2.0",
+    "lodash-id": "0.14.0",
+    "lowdb": "1.0.0",
+    "morgan": "1.9.1",
+    "nodemon": "1.15.0",
+    "webpack": "3.11.0",
+    "webpack-node-externals": "1.6.0"
   }
 }
