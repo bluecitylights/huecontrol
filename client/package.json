@@ -17,6 +17,6 @@
   },
   "proxy": "http://localhost:3001/",
   "devDependencies": {
-    "react-promise": "2.0.1"
+    "react-promise": "3.0.2"
   }
 }
