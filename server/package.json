@@ -17,7 +17,7 @@
     "serve-static": "1.14.1"
   },
   "devDependencies": {
-    "bcrypt": "1.0.3",
+    "bcrypt": "3.0.8",
     "body-parser": "1.19.0",
     "concurrently": "3.6.1",
     "json-loader": "0.5.7",
