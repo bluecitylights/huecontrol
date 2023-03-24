@@ -25,7 +25,7 @@
     "lodash-id": "0.14.0",
     "lowdb": "1.0.0",
     "morgan": "1.9.1",
-    "nodemon": "1.19.3",
+    "nodemon": "2.0.22",
     "webpack": "3.11.0",
     "webpack-node-externals": "1.6.0"
   }
